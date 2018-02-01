@@ -145,6 +145,7 @@ properties:
 
   # Optional Settings
   import: {type: string}
+  imports: {type: array, items: {type: string}}
   aggregation: *timeframe
   realert: *timeframe
   exponential_realert: *timeframe

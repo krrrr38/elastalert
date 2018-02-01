@@ -85,10 +85,12 @@ Rule Configuration Cheat Sheet
 | ``priority`` (int, default 2)                                |           |
 +--------------------------------------------------------------+           |
 | ``import`` (string)                                          |           |
-|                                                              |           |
-| IGNORED IF ``use_count_query`` or ``use_terms_query`` is true|           |
++--------------------------------------------------------------+           |
+| ``import`` (string)                                          |           |
 +--------------------------------------------------------------+           +
 | ``buffer_time`` (time, default from config.yaml)             |           |
+|                                                              |           |
+| IGNORED IF ``use_count_query`` or ``use_terms_query`` is true|           |
 +--------------------------------------------------------------+           |
 | ``timestamp_type`` (string, default iso)                     |           |
 +--------------------------------------------------------------+           |

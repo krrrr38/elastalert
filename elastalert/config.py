@@ -115,12 +115,11 @@ def load_configuration(filename, conf, args=None):
 
 
 def load_rule_yaml(filename):
-    rule = {
-        'rule_file': filename,
-    }
-
-    while True:
+    def _merge_load_rule_yaml(rule, filename, rule_dir):
         try:
+            # Find the path of the next file.
+            if not os.path.isabs(filename):
+                filename = os.path.join(rule_dir, filename)
             loaded = yaml_loader(filename)
         except yaml.scanner.ScannerError as e:
             raise EAException('Could not parse file %s: %s' % (filename, e))
@@ -130,18 +129,22 @@ def load_rule_yaml(filename):
             rule['filter'] = loaded['filter'] + rule['filter']
 
         loaded.update(rule)
-        rule = loaded
-        if 'import' in rule:
-            # Find the path of the next file.
-            if os.path.isabs(rule['import']):
-                filename = rule['import']
-            else:
-                filename = os.path.join(os.path.dirname(filename), rule['import'])
-            del(rule['import'])  # or we could go on forever!
-        else:
-            break
+        if 'import' in loaded:
+            import_rule_file = loaded['import']
+            del(loaded['import'])  # or we could go on forever!
+            loaded = _merge_load_rule_yaml(loaded, import_rule_file, rule_dir)
+        if 'imports' in loaded:
+            import_rule_files = loaded['imports']
+            del(loaded['imports'])  # or we could go on forever!
+            for import_rule_file in import_rule_files:
+                loaded = _merge_load_rule_yaml(loaded, import_rule_file, rule_dir)
+        return loaded
 
-    return rule
+    rule = {
+        'rule_file': filename,
+    }
+    rule_dir = os.path.dirname(filename)
+    return _merge_load_rule_yaml(rule, filename, rule_dir)
 
 
 def load_options(rule, conf, filename, args=None):
